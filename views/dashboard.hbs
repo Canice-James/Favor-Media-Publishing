@@ -1,0 +1,200 @@
+{{!< single}}
+
+
+{{#extend "styles"}}
+
+<!-- Bootstrap Data Table Plugin -->
+<link rel="stylesheet" href="css/components/bs-datatable.css" type="text/css" />
+
+<!-- Bootstrap File Upload CSS -->
+<link rel="stylesheet" href="css/components/bs-filestyle.css" type="text/css" />
+
+{{/extend}}
+
+<section id="content">
+
+  <div class="">
+    <div class="container clearfix">
+
+      <div class="table-responsive">
+        <table id="datatable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Media</th>
+              <th>Client</th>
+              <th>Start date</th>
+              <th>End date</th>
+              <th>Remaining Days</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th>ID</th>
+              <th>Media</th>
+              <th>Client</th>
+              <th>Start date</th>
+              <th>End date</th>
+              <th>Remaining Days</th>
+              <th>Edit</th>
+            </tr>
+          </tfoot>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><img src="" /></td>
+              <td>Client Name</td>
+              <td>March 20</td>
+              <td>April 19</td>
+              <td>8</td>
+              <td>
+                <a href="#" class="button button-mini button-border button-circle button-red"><i
+                    class="icon-edit"></i>Edit</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-body">
+      <div class="form-widget">
+        <div class="form-result"></div>
+
+        <form>
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Allowed Image &amp; Video Files: </label><br>
+              <input id="input-11" name="media" uploadUrl="localhost:3000/api/fileUpload"  uploadAsync="false" type="file" class="file-loading" accept="image/*" data-show-preview="true">
+            </div>
+  
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Email</label>
+              <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputPassword4">Password</label>
+              <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputAddress">Address</label>
+            <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+          </div>
+          <div class="form-group">
+            <label for="inputAddress2">Address 2</label>
+            <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputCity">City</label>
+              <input type="text" class="form-control" id="inputCity">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputState">State</label>
+              <select id="inputState" class="form-control">
+                <option selected>Choose...</option>
+                <option>...</option>
+              </select>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="inputZip">Zip</label>
+              <input type="text" class="form-control" id="inputZip">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="gridCheck">
+              <label class="form-check-label" for="gridCheck">
+                Check me out
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign in</button>
+        </form>
+
+      </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{{#extend "scripts"}}
+
+<!-- Bootstrap Data Table Plugin -->
+<script src="js/components/bs-datatable.js"></script>
+
+<!-- Bootstrap File Upload Plugin -->
+<script src="js/components/bs-filestyle.js"></script>
+
+<script>
+
+  $(document).ready(function () {
+    $('#datatable1').dataTable();
+  });
+
+  $("#media").fileinput({
+    maxFileCount: 1,
+    showPreview: true,
+    allowedFileTypes: ["image", "video"]
+  });
+
+  $('#media').on('filebatchuploadsuccess', function(event, data) {
+    var mediaID = data.response;
+    console.log('File batch upload success');
+  });
+
+
+  function uploadPicture() {
+    //Prepare form data
+    var formData = new FormData();)
+    formData.append("file", $("#inputFileToLoad")[0].files[0]);
+    formData.append("ext", $("#inputFileToLoad")[0].files[0].type.split("/").pop();
+    //formData.append("url", "http://i.telegraph.co.uk/multimedia/archive/02007/Plate-1_2007614b.jpg"); //url of remote image
+    callService(formData, (id){
+      var id = id;
+    });
+  }
+
+  function callService(formData, callback) {
+    //Send OCR Parsing request asynchronously
+    jQuery.ajax({
+      url: "localhost:3000/api/fileUpload",
+      data: formData,
+      dataType: 'json',
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function (res) {
+        //Get the parsed results, exit code and error message and details
+        console.log("Success!");
+
+        callback(res.id)
+      }
+    }
+    });
+  }
+
+</script>
+{{/extend}}
